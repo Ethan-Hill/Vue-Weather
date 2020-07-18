@@ -1,14 +1,18 @@
 <template>
-  <div id="app" :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 
-    'warm' : ''">
+  <div
+    id="app"
+    :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 
+    'warm' : ''"
+  >
     <main>
       <div class="search-box">
-        <input 
-        type="text" 
-        class="search-bar" 
-        placeholder="Search..."
-        v-model="query"
-        @keypress="fetchWeather"
+        <input
+          type="text"
+          class="search-bar"
+          placeholder="Search..."
+          v-model="query"
+          id="searchBar"
+          @keypress="fetchWeather"
         />
       </div>
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
@@ -17,11 +21,10 @@
           <div class="date">{{ dateBuilder() }}</div>
         </div>
 
-      <div class="weather-box">
-        <div class="temp">{{Math.round(weather.main.temp)}}°C</div>
-        <div class="weather">{{weather.weather[0].main}}</div>
-      </div>
-
+        <div class="weather-box">
+          <div class="temp">{{Math.round(weather.main.temp)}}°C</div>
+          <div class="weather">{{weather.weather[0].main}}</div>
+        </div>
       </div>
     </main>
   </div>
@@ -33,25 +36,56 @@ export default {
   data() {
     return {
       api_key: "d12bc2e2839a1c0d87293e8575c2a7b3",
-      url_base: 'https://api.openweathermap.org/data/2.5/',
-      query: '',
+      url_base: "https://api.openweathermap.org/data/2.5/",
+      query: "",
       weather: {}
     };
   },
   methods: {
     async fetchWeather(e) {
-      if(e.key == "Enter") {
-        const res = await fetch(`${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`);
-        this.weather = await res.json().then(this.setResults)
+      var input = document.getElementById("searchBar");
+      if (e.key == "Enter") {
+        await fetch(
+          `${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`
+        ).then(async response => {
+          if (!response.ok) {
+            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
+          } else {
+            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)";
+            this.weather = await response.json().then(this.setResults);
+          }
+        });
+        
       }
     },
-    setResults (results) {
+    setResults(results) {
       this.weather = results;
     },
-     dateBuilder () {
+    dateBuilder() {
       let d = new Date();
-      let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      let months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ];
+      let days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ];
       let day = days[d.getDay()];
       let date = d.getDate();
       let month = months[d.getMonth()];
@@ -78,7 +112,7 @@ export default {
 }
 
 #app.warm {
-  background-image: url('./assets/warm-bg.png');
+  background-image: url("./assets/warm-bg.png");
 }
 
 main {
@@ -143,10 +177,10 @@ main {
   text-align: center;
 }
 
-.weather-box .temp{
+.weather-box .temp {
   display: inline-block;
   padding: 10px 25px;
-  color:#fff;
+  color: #fff;
   font-size: 102px;
   font-weight: 900;
 
@@ -159,8 +193,8 @@ main {
   transition: 0.3s ease-in-out;
 }
 
-.weather-box .temp:hover{
-  background-color: rgba(240, 238, 238, 0.7);
+.weather-box .temp:hover {
+  background-color: rgba(240, 238, 238, 0.5);
   transition: 0.4s ease-in-out;
 }
 
