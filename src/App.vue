@@ -1,7 +1,7 @@
 <template>
   <div
     id="app"
-    :class="typeof weather.main != 'undefined' && weather.main.temp > 16 ? 
+    :class="typeof weatherM.main != 'undefined' && weatherM.main.temp > 16 ? 
     'warm' : ''"
   >
     <main>
@@ -15,15 +15,15 @@
           @keypress="fetchWeather"
         />
       </div>
-      <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
+      <div class="weather-wrap" v-if="typeof weatherM.main != 'undefined'">
         <div class="location-box">
-          <div class="location">{{ weather.name }}, {{weather.sys.country}}</div>
+          <div class="location">{{ weatherM.name }}, {{weatherM.sys.country}}</div>
           <div class="date">{{ dateBuilder() }}</div>
         </div>
 
         <div class="weather-box">
-          <div class="temp">{{Math.round(weather.main.temp)}}°C</div>
-          <div class="weather">{{weather.weather[0].main}}</div>
+          <div class="temp" id="temp" v-on:click="changeTemp()">{{Math.round(weatherM.main.temp)}}°C</div>
+          <div class="weather">{{weatherM.weather[0].main}}</div>
         </div>
       </div>
     </main>
@@ -38,7 +38,9 @@ export default {
       api_key: "d12bc2e2839a1c0d87293e8575c2a7b3",
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
-      weather: {}
+      weatherM: {},
+      weatherI: {},
+      weatherStatus: "M"
     };
   },
   methods: {
@@ -52,14 +54,41 @@ export default {
             input.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
           } else {
             input.style.backgroundColor = "rgba(0, 255, 0, 0.25)";
-            this.weather = await response.json().then(this.setResults);
+            this.weather = await response.json().then(this.setResultsM);
           }
         });
-        
+
+        await fetch(
+          `${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`
+        ).then(async response => {
+          if (!response.ok) {
+            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
+          } else {
+            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)";
+            this.weather = await response.json().then(this.setResultsI);
+          }
+        });
+
+        console.log(this.weatherI);
+        console.log(this.weatherM);
       }
     },
-    setResults(results) {
-      this.weather = results;
+    setResultsM(results) {
+      this.weatherM = results;
+    },
+    setResultsI(results) {
+      this.weatherI = results;
+    },
+    changeTemp() {
+      if (this.weatherStatus == "M") {
+        this.weatherStatus = "I";
+        let box = document.getElementById("temp");
+        box.innerHTML = Math.round(this.weatherI.main.temp) + "°F";
+      } else {
+        this.weatherStatus = "M";
+        let box = document.getElementById("temp");
+        box.innerHTML = Math.round(this.weatherM.main.temp) + "°C";
+      }
     },
     dateBuilder() {
       let d = new Date();
