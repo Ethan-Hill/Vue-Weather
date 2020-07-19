@@ -23,8 +23,8 @@
 
         <div class="weather-box">
           <div class="temp" id="temp">{{Math.round(weatherM.main.temp)}}°C</div>
-          <br>
-          <label class="switch">
+          <br />
+          <label class="switch" id="switch" data-tooltip="Change units">
             <input type="checkbox" v-on:click="changeTemp()" />
             <span class="slider round"></span>
           </label>
@@ -243,11 +243,11 @@ main {
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
+  width: 75px;
   height: 34px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -261,8 +261,8 @@ main {
   right: 0;
   bottom: 0;
   background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 .slider:before {
@@ -273,22 +273,22 @@ main {
   left: 4px;
   bottom: 4px;
   background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background-color: #2196f3;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+  box-shadow: 0 0 1px #2196f3;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+  -webkit-transform: translateX(36px);
+  -ms-transform: translateX(36px);
+  transform: translateX(42px);
 }
 
 /* Rounded sliders */
@@ -298,5 +298,56 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+
+#switch {
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+}
+
+#switch::before,
+#switch::after {
+  --scale: 0;
+  --tooltip-color: #333;
+  --arrow-size: 10px;
+
+  position: absolute;
+  content: "";
+  top: -0.25rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(var(--translate-y, 0))
+    scale(var(--scale));
+  transition: 150ms transform;
+  transform-origin: bottom center;
+}
+
+#switch::before {
+  --translate-y: calc(-100% - var(--arrow-size));
+
+  content: attr(data-tooltip);
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  max-width: max-content;
+  width: 100%;
+  background: var(--tooltip-color);
+  text-align: center;
+}
+
+#switch:hover::before,
+#switch:hover::after {
+  --scale: 1;
+}
+
+#switch::after {
+  --translate-y: calc(-1 * var(--arrow-size));
+
+  content: "";
+  border: var(--arrow-size) solid transparent;
+  border-top-color: var(--tooltip-color);
+  transform-origin: top center;
 }
 </style>
