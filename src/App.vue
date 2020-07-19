@@ -73,9 +73,15 @@ export default {
             this.weather = await response.json().then(this.setResultsI);
           }
         });
-
-        console.log(this.weatherI);
-        console.log(this.weatherM);
+        
+        if (this.weatherStatus == "I") {
+        let box = document.getElementById("temp");
+        box.innerHTML = Math.round(this.weatherI.main.temp) + "°F";
+      } else {
+        let box = document.getElementById("temp");
+        box.innerHTML = Math.round(this.weatherM.main.temp) + "°C";
+      }
+        console.log(this.weatherStatus)
       }
     },
     setResultsM(results) {
