@@ -1,8 +1,11 @@
 <template>
   <div
     id="app"
-    :class="typeof weatherM.main != 'undefined' && weatherM.main.temp > 16 ? 
-    'warm' : ''"
+    :class="
+      typeof weatherM.main != 'undefined' && weatherM.main.temp > 16
+        ? 'warm'
+        : ''
+    "
   >
     <main>
       <div class="search-box">
@@ -17,18 +20,22 @@
       </div>
       <div class="weather-wrap" v-if="typeof weatherM.main != 'undefined'">
         <div class="location-box">
-          <div class="location">{{ weatherM.name }}, {{weatherM.sys.country}}</div>
+          <div class="location">
+            {{ weatherM.name }}, {{ weatherM.sys.country }}
+          </div>
           <div class="date">{{ dateBuilder() }}</div>
         </div>
 
         <div class="weather-box">
-          <div class="temp" id="temp">{{Math.round(weatherM.main.temp)}}°C</div>
+          <div class="temp" id="temp">
+            {{ Math.round(weatherM.main.temp) }}°C
+          </div>
           <br />
           <label class="switch" id="switch" data-tooltip="Change units">
             <input type="checkbox" v-on:click="changeTemp()" />
             <span class="slider round"></span>
           </label>
-          <div class="weather">{{weatherM.weather[0].main}}</div>
+          <div class="weather">{{ weatherM.weather[0].main }}</div>
         </div>
       </div>
     </main>
@@ -45,64 +52,64 @@ export default {
       query: "",
       weatherM: {},
       weatherI: {},
-      weatherStatus: "M"
-    };
+      weatherStatus: "M",
+    }
   },
   methods: {
     async fetchWeather(e) {
-      var input = document.getElementById("searchBar");
+      var input = document.getElementById("searchBar")
       if (e.key == "Enter") {
         await fetch(
           `${this.url_base}weather?q=${this.query}&units=metric&APPID=${this.api_key}`
-        ).then(async response => {
+        ).then(async (response) => {
           if (!response.ok) {
-            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
+            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)"
           } else {
-            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)";
-            this.weather = await response.json().then(this.setResultsM);
+            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)"
+            this.weather = await response.json().then(this.setResultsM)
           }
-        });
+        })
 
         await fetch(
           `${this.url_base}weather?q=${this.query}&units=imperial&APPID=${this.api_key}`
-        ).then(async response => {
+        ).then(async (response) => {
           if (!response.ok) {
-            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)";
+            input.style.backgroundColor = "rgba(255, 0, 0, 0.25)"
           } else {
-            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)";
-            this.weather = await response.json().then(this.setResultsI);
+            input.style.backgroundColor = "rgba(0, 255, 0, 0.25)"
+            this.weather = await response.json().then(this.setResultsI)
           }
-        });
-        
+        })
+
         if (this.weatherStatus == "I") {
-        let box = document.getElementById("temp");
-        box.innerHTML = Math.round(this.weatherI.main.temp) + "°F";
-      } else {
-        let box = document.getElementById("temp");
-        box.innerHTML = Math.round(this.weatherM.main.temp) + "°C";
-      }
+          let box = document.getElementById("temp")
+          box.innerHTML = Math.round(this.weatherI.main.temp) + "°F"
+        } else {
+          let box = document.getElementById("temp")
+          box.innerHTML = Math.round(this.weatherM.main.temp) + "°C"
+        }
         console.log(this.weatherStatus)
       }
     },
     setResultsM(results) {
-      this.weatherM = results;
+      this.weatherM = results
     },
     setResultsI(results) {
-      this.weatherI = results;
+      this.weatherI = results
     },
     changeTemp() {
       if (this.weatherStatus == "M") {
-        this.weatherStatus = "I";
-        let box = document.getElementById("temp");
-        box.innerHTML = Math.round(this.weatherI.main.temp) + "°F";
+        this.weatherStatus = "I"
+        let box = document.getElementById("temp")
+        box.innerHTML = Math.round(this.weatherI.main.temp) + "°F"
       } else {
-        this.weatherStatus = "M";
-        let box = document.getElementById("temp");
-        box.innerHTML = Math.round(this.weatherM.main.temp) + "°C";
+        this.weatherStatus = "M"
+        let box = document.getElementById("temp")
+        box.innerHTML = Math.round(this.weatherM.main.temp) + "°C"
       }
     },
     dateBuilder() {
-      let d = new Date();
+      let d = new Date()
       let months = [
         "January",
         "February",
@@ -115,8 +122,8 @@ export default {
         "September",
         "October",
         "November",
-        "December"
-      ];
+        "December",
+      ]
       let days = [
         "Sunday",
         "Monday",
@@ -124,16 +131,16 @@ export default {
         "Wednesday",
         "Thursday",
         "Friday",
-        "Saturday"
-      ];
-      let day = days[d.getDay()];
-      let date = d.getDate();
-      let month = months[d.getMonth()];
-      let year = d.getFullYear();
-      return `${day} ${date} ${month} ${year}`;
-    }
-  }
-};
+        "Saturday",
+      ]
+      let day = days[d.getDay()]
+      let date = d.getDate()
+      let month = months[d.getMonth()]
+      let year = d.getFullYear()
+      return `${day} ${date} ${month} ${year}`
+    },
+  },
+}
 </script>
 
 <style>
